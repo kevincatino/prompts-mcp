@@ -44,7 +44,7 @@ tools/call: expand_prompt
   - If the prompt contains `{{input}}`, all instances are replaced with the provided `input`.
   - If no placeholder exists, the `input` is appended after two newlines to preserve the template body.
 - Errors:
-  - Unknown prompt file or YAML parse issues surface as `result.isError:true` with message text.
+  - Unknown prompt file or Markdown/frontmatter parse issues surface as `result.isError:true` with message text.
 
 Error Codes
 -----------

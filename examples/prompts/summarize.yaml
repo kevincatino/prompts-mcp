@@ -1,8 +1,0 @@
-description: "Summarize provided text into a tight digest with bullets."
-prompt: |
-  Summarize the following content into:
-  - A 2-3 sentence overview
-  - 3 bullet highlights
-
-  Content:
-  {{input}}

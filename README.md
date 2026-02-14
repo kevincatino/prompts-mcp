@@ -1,11 +1,11 @@
 prompts-mcp
 =============
-Small Go MCP server that reads prompt templates from YAML files and exposes them over stdio using JSON-RPC 2.0 tools.
+Small Go MCP server that reads prompt templates from Markdown files with YAML frontmatter and exposes them over stdio using JSON-RPC 2.0 tools.
 
 Overview
 --------
-- Serves two MCP tools: `list_prompts` (lists YAML prompt files) and `expand_prompt` (returns the prompt with `{{input}}` replaced, or appends input if no placeholder).
-- Accepts an absolute `--prompts-dir` pointing to the directory containing `.yaml` prompt definitions.
+- Serves two MCP tools: `list_prompts` (lists Markdown prompt files) and `expand_prompt` (returns the prompt with `{{input}}` replaced, or appends input if no placeholder).
+- Accepts an absolute `--prompts-dir` pointing to the directory containing `.md` prompt definitions with YAML frontmatter.
 - Ships example prompts and bash scripts to exercise the MCP server over stdio.
 
 Project Structure
@@ -14,9 +14,9 @@ Project Structure
 - `internal/` — core packages:
   - `logging/` — zap production logger setup.
   - `mcp/` — JSON-RPC handling, MCP tools, stdio server.
-  - `prompts/` — prompt model and YAML-backed repository.
+  - `prompts/` — prompt model and Markdown frontmatter-backed repository.
   - `validate/` — path validation helpers and tests.
-- `examples/prompts/` — sample prompt YAML files.
+- `examples/prompts/` — sample prompt Markdown files.
 - `scripts/` — helper scripts to list/call tools against the server.
 - `Makefile` — build/test/vet targets.
 
@@ -27,7 +27,7 @@ Installation & Setup
 - Build: `go build -o prompts ./cmd/prompts` (or `make build`)
 - Test: `go test ./...` (or `make test`)
 - Static analysis: `make vet`
-- Ensure you have a prompts directory with `.yaml` files and pass its absolute path to `--prompts-dir`.
+- Ensure you have a prompts directory with `.md` files containing YAML frontmatter and pass its absolute path to `--prompts-dir`.
 
 Usage
 -----
@@ -60,4 +60,4 @@ Tech Stack
 - Go 1.23
 - JSON-RPC 2.0 over stdio (Model Context Protocol 2024-11-05)
 - zap for logging
-- YAML (gopkg.in/yaml.v3) for prompt storage
+- Markdown with YAML frontmatter (gopkg.in/yaml.v3 for frontmatter parsing)

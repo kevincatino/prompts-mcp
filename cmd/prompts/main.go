@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	promptsDirFlag := flag.String("prompts-dir", "", "absolute path to prompts directory containing YAML prompt definitions")
+	promptsDirFlag := flag.String("prompts-dir", "", "absolute path to prompts directory containing Markdown prompt definitions with YAML frontmatter")
 	flag.Parse()
 
 	logger, err := logging.New()
@@ -27,14 +27,12 @@ func main() {
 	}
 	defer logger.Sync() //nolint:errcheck
 
-
 	promptsDir, err := validate.Dir(*promptsDirFlag)
 	if err != nil {
 		logger.Fatal("invalid prompts-dir", zap.Error(err))
 	}
 
-	promptsRepo := prompts.NewYAMLRepository(promptsDir)
-
+	promptsRepo := prompts.NewFrontmatterRepository(promptsDir)
 
 	server := mcp.NewServer(logger, promptsRepo)
 

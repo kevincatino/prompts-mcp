@@ -3,7 +3,7 @@ Modules
 
 cmd/prompts
 -----------
-- `main.go`: CLI entrypoint. Parses `--prompts-dir`, initializes zap logger, validates the directory, constructs YAML repository, builds MCP server, and serves with signal-aware context.
+- `main.go`: CLI entrypoint. Parses `--prompts-dir`, initializes zap logger, validates the directory, constructs Markdown frontmatter repository, builds MCP server, and serves with signal-aware context.
 
 internal/logging
 ----------------
@@ -18,7 +18,7 @@ internal/prompts
 ----------------
 - `model.go`: `Prompt` struct (`Name`, `Description`, `Content`); `Validate` requires `Name` and `Content`.
 - `repository.go`: Repository interface defining `ListPrompts` and `GetPrompt`.
-- `yaml_repository.go`: `YAMLRepository` implementation that reads `.yaml` files, trims whitespace, validates prompts, and supports listing or fetching by name.
+- `yaml_repository.go`: `FrontmatterRepository` implementation that reads `.md` files, parses YAML frontmatter, trims whitespace, validates prompts, and supports listing or fetching by name.
 
 internal/mcp
 ------------
@@ -29,8 +29,8 @@ internal/mcp
 
 examples/prompts
 ----------------
-- `research.yaml`: prompt with `{{input}}` placeholder.
-- `summarize.yaml`: prompt with `{{input}}` placeholder.
+- `research.md`: prompt with YAML frontmatter and `{{input}}` placeholder.
+- `summarize.md`: prompt with YAML frontmatter and `{{input}}` placeholder.
 
 scripts
 -------

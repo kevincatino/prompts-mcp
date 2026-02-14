@@ -3,7 +3,7 @@ Decisions
 
 Prompt Storage
 --------------
-- Store prompts as individual `.yaml` files in a single directory to keep authoring simple and editable without code changes.
+- Store prompts as individual `.md` files with YAML frontmatter in a single directory to keep authoring simple and editable without code changes.
 
 Directory Validation
 --------------------

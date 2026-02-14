@@ -5,7 +5,7 @@ Overview
 --------
 - CLI entrypoint (`cmd/prompts/main.go`) parses `--prompts-dir`, builds a zap production logger, validates the directory, and constructs the MCP server.
 - The server runs over stdio using JSON-RPC 2.0. It decodes requests, routes to handlers, and encodes responses line-by-line.
-- Handlers expose two MCP tools backed by a YAML prompt repository.
+- Handlers expose two MCP tools backed by a Markdown prompt repository with YAML frontmatter.
 
 Components and Flow
 -------------------
@@ -13,14 +13,14 @@ Components and Flow
    - Parses `--prompts-dir` flag (must be absolute).
    - Initializes logger via `logging.New()` (`zap.NewProduction()` JSON output).
    - Validates the directory with `validate.Dir`, rejecting relative/root/non-existent/non-dir paths and symlink escapes.
-   - Builds `prompts.NewYAMLRepository(promptsDir)` and `mcp.NewServer(logger, repo)`.
+   - Builds `prompts.NewFrontmatterRepository(promptsDir)` and `mcp.NewServer(logger, repo)`.
    - Starts serving with cancellation on SIGINT/SIGTERM.
 
 2) `internal/validate`
    - `Dir` normalizes and resolves symlinks, ensuring an existing directory that is not `/`.
 
 3) `internal/prompts`
-   - `YAMLRepository` lists `.yaml` files in the base directory, trims names for prompt IDs, and loads/validates content.
+   - `FrontmatterRepository` lists `.md` files in the base directory, trims names for prompt IDs, parses YAML frontmatter, and loads/validates content.
    - `Prompt.Validate` requires `name` and `content`; descriptions are optional.
    - `loadPrompt` trims whitespace on description/content to keep responses clean.
 
@@ -36,9 +36,9 @@ Components and Flow
 
 Data Contracts
 --------------
-- Input: YAML files shaped as:
-  - `description: "short description"`
-  - `prompt: |` followed by the prompt body (may include `{{input}}`).
+- Input: Markdown files with YAML frontmatter shaped as:
+   - Frontmatter: `description: "short description"`
+   - Body: prompt content (may include `{{input}}`).
 - Tools:
   - `list_prompts` → `{"prompts":[{"name","description"}]}`
   - `expand_prompt` → `{"prompt":"expanded string"}`
@@ -49,4 +49,4 @@ Operational Notes
 -----------------
 - Logging uses zap production JSON to stdout/stderr; defer `logger.Sync()` in main.
 - Server stops cleanly on context cancellation (SIGINT/SIGTERM).
-- Prompts directory reading and YAML parsing propagate errors through tool responses.
+- Prompts directory reading and Markdown/frontmatter parsing propagate errors through tool responses.

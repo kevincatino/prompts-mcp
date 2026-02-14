@@ -4,7 +4,7 @@ Setup
 Prerequisites
 -------------
 - Go 1.23 or newer.
-- A directory of prompt files ending in `.yaml`.
+- A directory of prompt files ending in `.md`.
 
 Build and Test
 --------------
@@ -28,11 +28,12 @@ Local Cache Configuration
 
 Prompt File Format
 ------------------
-- Each prompt file must be YAML with extension `.yaml` and include:
-  - `description: "short description"`
-  - `prompt: |` followed by the prompt template body.
+- Each prompt file must be Markdown with extension `.md` and include:
+  - YAML frontmatter wrapped by `---` delimiters.
+  - `description: "short description"` in frontmatter.
+  - Prompt template body in the Markdown content after frontmatter.
 - Optional placeholder: `{{input}}` will be replaced with the `input` argument when expanding. If absent, the input is appended after two newlines.
-- Example: see `examples/prompts/research.yaml` and `examples/prompts/summarize.yaml`.
+- Example: see `examples/prompts/research.md` and `examples/prompts/summarize.md`.
 
 Quick Checks
 ------------

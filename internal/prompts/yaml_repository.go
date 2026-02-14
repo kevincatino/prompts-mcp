@@ -10,16 +10,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// YAMLRepository loads prompts from YAML files in a directory.
-type YAMLRepository struct {
+// FrontmatterRepository loads prompts from Markdown files with YAML frontmatter.
+type FrontmatterRepository struct {
 	baseDir string
 }
 
-func NewYAMLRepository(baseDir string) *YAMLRepository {
-	return &YAMLRepository{baseDir: baseDir}
+func NewFrontmatterRepository(baseDir string) *FrontmatterRepository {
+	return &FrontmatterRepository{baseDir: baseDir}
 }
 
-func (r *YAMLRepository) ListPrompts(ctx context.Context) ([]Prompt, error) {
+func (r *FrontmatterRepository) ListPrompts(ctx context.Context) ([]Prompt, error) {
 	entries, err := os.ReadDir(r.baseDir)
 	if err != nil {
 		return nil, fmt.Errorf("read prompts dir: %w", err)
@@ -36,11 +36,11 @@ func (r *YAMLRepository) ListPrompts(ctx context.Context) ([]Prompt, error) {
 		if entry.IsDir() {
 			continue
 		}
-		if filepath.Ext(entry.Name()) != ".yaml" {
+		if !strings.EqualFold(filepath.Ext(entry.Name()), ".md") {
 			continue
 		}
 
-		name := strings.TrimSuffix(entry.Name(), ".yaml")
+		name := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
 		prompt, err := r.loadPrompt(entry.Name(), name)
 		if err != nil {
 			return nil, err
@@ -51,39 +51,67 @@ func (r *YAMLRepository) ListPrompts(ctx context.Context) ([]Prompt, error) {
 	return promptsList, nil
 }
 
-func (r *YAMLRepository) GetPrompt(ctx context.Context, name string) (Prompt, error) {
+func (r *FrontmatterRepository) GetPrompt(ctx context.Context, name string) (Prompt, error) {
 	select {
 	case <-ctx.Done():
 		return Prompt{}, ctx.Err()
 	default:
 	}
 
-	filename := name + ".yaml"
+	filename := name + ".md"
 	return r.loadPrompt(filename, name)
 }
 
-func (r *YAMLRepository) loadPrompt(filename string, name string) (Prompt, error) {
+func (r *FrontmatterRepository) loadPrompt(filename string, name string) (Prompt, error) {
 	content, err := os.ReadFile(filepath.Join(r.baseDir, filename))
 	if err != nil {
 		return Prompt{}, fmt.Errorf("read %s: %w", filename, err)
 	}
 
+	frontmatter, body, err := parseFrontmatterMarkdown(content)
+	if err != nil {
+		return Prompt{}, fmt.Errorf("parse %s: %w", filename, err)
+	}
+
 	var raw struct {
 		Description string `yaml:"description"`
-		Prompt      string `yaml:"prompt"`
 	}
-	if err := yaml.Unmarshal(content, &raw); err != nil {
-		return Prompt{}, fmt.Errorf("parse %s: %w", filename, err)
+	if err := yaml.Unmarshal([]byte(frontmatter), &raw); err != nil {
+		return Prompt{}, fmt.Errorf("parse frontmatter in %s: %w", filename, err)
 	}
 
 	p := Prompt{
 		Name:        name,
 		Description: strings.TrimSpace(raw.Description),
-		Content:     strings.TrimSpace(raw.Prompt),
+		Content:     strings.TrimSpace(body),
 	}
 	if err := p.Validate(); err != nil {
 		return Prompt{}, fmt.Errorf("validate %s: %w", filename, err)
 	}
 
 	return p, nil
+}
+
+func parseFrontmatterMarkdown(content []byte) (frontmatter string, body string, err error) {
+	normalized := strings.ReplaceAll(string(content), "\r\n", "\n")
+	lines := strings.Split(normalized, "\n")
+
+	if len(lines) < 2 || lines[0] != "---" {
+		return "", "", fmt.Errorf("missing YAML frontmatter start delimiter")
+	}
+
+	endLine := -1
+	for i := 1; i < len(lines); i++ {
+		if lines[i] == "---" {
+			endLine = i
+			break
+		}
+	}
+	if endLine == -1 {
+		return "", "", fmt.Errorf("missing YAML frontmatter end delimiter")
+	}
+
+	frontmatter = strings.Join(lines[1:endLine], "\n")
+	body = strings.Join(lines[endLine+1:], "\n")
+	return frontmatter, body, nil
 }
