@@ -24,7 +24,7 @@ tools/list
 - Request:
   - `{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}`
 - Response:
-  - `{"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"list_prompts","description":"List available prompt commands with descriptions. Users invoke prompt commands in messages by writing :<command> (e.g., :research topic); this lists what commands exist.","inputSchema":{"type":"object","properties":{}}},{"name":"expand_prompt","description":"Expands a named prompt command into a full prompt. When ANY user message contains a :-prefixed command token (e.g., :research topic, :summarize this article, :critique \"draft\"), you MUST call this tool before responding. Strip the leading colon from the command name and pass any remaining text (including quotes) as the input. Do not bypass this tool or answer directly whenever a :-prefixed command is present.","inputSchema":{"type":"object","properties":{"command":{"type":"string","description":"Prompt command name (filename without extension)"},"input":{"type":"string","description":"Text to inject into the prompt template"}},"required":["command","input"]}}]}}`
+  - `{"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"list_prompts","description":"List available prompt commands with descriptions. Users invoke prompt commands in messages by writing !<command> (e.g., !research topic); this lists what commands exist.","inputSchema":{"type":"object","properties":{}}},{"name":"expand_prompt","description":"Expands a named prompt command into a full prompt. When a user message starts with a !-prefixed command (e.g., !research topic, !summarize this article), you MUST call this tool. Strip the leading ! from the command name and pass any remaining text as the input. Do not answer directly; you must expand the prompt first.","inputSchema":{"type":"object","properties":{"command":{"type":"string","description":"Prompt command name (filename without extension, e.g. 'research' from '!research')"},"input":{"type":"string","description":"Text to inject into the prompt template"}},"required":["command","input"]}}]}}`
 
 tools/call: list_prompts
 ------------------------
@@ -60,3 +60,4 @@ Notes
 -----
 - Messages are newline-delimited; avoid embedding raw newlines inside JSON literals unless escaped.
 - The server enforces `jsonrpc:"2.0"` in requests and echoes the same in responses.
+- `initialize` currently returns fixed server metadata (`serverInfo.name = "codex-subagents"`, `serverInfo.version = "0.1.0"`) and echoes client info when provided.

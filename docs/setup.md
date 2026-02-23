@@ -37,5 +37,9 @@ Prompt File Format
 
 Quick Checks
 ------------
-- List tools: `./scripts/test-tools-list.sh`
-- List prompts and expand one: `./scripts/test-prompts.sh`
+- Run from the `scripts/` directory (the scripts use `go run ../cmd/prompts`):
+  - `cd scripts && ./test-tools-list.sh`
+  - `cd scripts && ./test-prompts.sh`
+- Optional script overrides:
+  - `./test-tools-list.sh _ /absolute/path/to/prompts`
+  - `./test-prompts.sh _ /absolute/path/to/prompts summarize "text to summarize"`

@@ -37,9 +37,10 @@ Usage
   - `{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}`
   - `{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_prompts","arguments":{}}}`
   - `{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"expand_prompt","arguments":{"command":"research","input":"Example topic"}}}`
-- Helper scripts (set `PROMPTS_DIR` to override default `examples/prompts`):
-  - `./scripts/test-tools-list.sh`
-  - `./scripts/test-prompts.sh`
+- Helper scripts (run from `scripts/`; defaults to `../examples/prompts`):
+  - `cd scripts && ./test-tools-list.sh`
+  - `cd scripts && ./test-prompts.sh`
+  - Optional overrides: second arg = prompts dir, third arg = command, fourth arg = input (for `test-prompts.sh`).
   - Scripts set `GOMODCACHE`, `GOPATH`, and `GOCACHE` under the repo when those env vars are unset.
 
 Architecture

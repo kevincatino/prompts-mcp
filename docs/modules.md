@@ -34,5 +34,5 @@ examples/prompts
 
 scripts
 -------
-- `test-tools-list.sh`: sends `tools/list` to the server using `go run` with configurable `PROMPTS_DIR`.
-- `test-prompts.sh`: sends `tools/list`, `list_prompts`, and `expand_prompt` requests; defaults to `examples/prompts`.
+- `test-tools-list.sh`: sends `tools/list` using `go run ../cmd/prompts`; defaults to `../examples/prompts` and accepts an optional prompts dir as the second positional arg.
+- `test-prompts.sh`: sends `tools/list`, `list_prompts`, and `expand_prompt`; defaults to `../examples/prompts` and accepts optional positional overrides for prompts dir (2nd), command (3rd), and input (4th).
